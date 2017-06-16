@@ -18,7 +18,7 @@ voice:x:22:
 cdrom:x:24:
 floppy:x:25:
 tape:x:26:
-sudo:x:27:steven
+sudo:x:27:steven,lokke
 audio:x:29:
 dip:x:30:
 www-data:x:33:
@@ -41,3 +41,4 @@ crontab:x:101:
 netdev:x:102:
 steven:x:1000:
 ssh:x:103:
+lokke:x:1001:
