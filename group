@@ -42,3 +42,4 @@ netdev:x:102:
 steven:x:1000:
 ssh:x:103:
 lokke:x:1001:
+ssl-cert:x:104:
