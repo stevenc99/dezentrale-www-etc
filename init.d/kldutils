@@ -1,0 +1,63 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          kldutils module-init-tools
+# Required-Start:
+# Required-Stop:
+# X-Start-Before:    mountall freebsd-utils
+# Should-Start:      
+# Should-stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Process /etc/modules.
+# Description:       Load the modules listed in /etc/modules.
+### END INIT INFO
+
+set -e
+
+PATH=/sbin:/bin
+
+do_start() {
+	for i in sysctl kldload kldstat kldunload ; do
+		which ${i} >/dev/null || exit 1
+	done
+
+	# Override /boot/kernel default (we do this in userland to support
+	# upstream kernels)
+	sysctl "kern.module_path=/lib/modules/$(uname -r)"
+
+	# Load modules
+	for file in /etc/modules /etc/modules.d/* ; do
+		if ! test -f ${file} ; then
+			continue
+		fi
+		modules="`sed -e 's/#.*//g' -e '/^\( \|\t\)*$/d' ${file}`"
+		for module in ${modules} ; do
+			if ! kldstat -q -m ${module} 2>/dev/null ; then
+				echo "Loading ${module} ..."
+				kldload ${module} || true
+				echo "... done."
+			else
+				echo "Not loading ${module} (already loaded)"
+			fi
+		done
+	done
+}
+
+case "$1" in
+  start|"")
+	do_start
+	;;
+  restart|reload|force-reload)
+	echo "Error: argument '$1' not supported" >&2
+	exit 3
+	;;
+  stop)
+	# No-op
+	;;
+  *)
+	echo "Usage: $0 [start|stop]" >&2
+	exit 3
+	;;
+esac
+
+exit 0

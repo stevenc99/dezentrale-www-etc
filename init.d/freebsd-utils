@@ -1,0 +1,94 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          freebsd-utils udev
+# Required-Start:
+# Required-Stop:
+# X-Start-Before:    mtab
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: FreeBSD kernel specific setup
+### END INIT INFO
+
+set -e
+
+PATH=/sbin:/bin
+
+. /lib/lsb/init-functions
+
+# Comment this out for sysctl to print every item changed
+QUIET_SYSCTL="-q"
+
+case "$1" in
+  start)
+    if [ "$(readlink /etc/mtab)" != "/proc/mounts" ] ; then
+      log_warning_msg "Warning: replacing /etc/mtab by a symlink to /proc/mounts."
+      rm -f /etc/mtab
+      ln -sf /proc/mounts /etc/mtab
+    fi
+
+    log_action_begin_msg "Loading devfs rules"
+    if devfs ruleset 1 ; then
+      devfs rule delset
+      for rule in /etc/devfs.d/*.rules ; do
+        egrep -v '^[[:space:]]*(#|$)' $rule | devfs rule add -
+      done
+      devfs rule applyset
+      log_action_end_msg $?
+    else
+      # devfs unavailable, probably in a jail environment;  no point proceeding
+      log_end_msg 255 || exit 0 # (warning)
+    fi
+
+    log_action_begin_msg "Setting up /dev links"
+    # setup /dev/cdrom symlink
+    if ! test -e /dev/cdrom && ! test -L /dev/cdrom ; then
+      for i in {,a}cd{0,1,2,3,4,5,6,7,8,9} ; do
+        if test -e /dev/$i ; then
+          ln -s $i /dev/cdrom
+          break
+        fi
+      done
+    fi
+    log_action_end_msg 0
+
+    log_action_begin_msg "Mounting kernel filesystems"
+    # Mount /dev/fd, /proc and /sys
+    if ! test -f /proc/cmdline ; then
+      mount -t linprocfs proc /proc
+    fi
+    if ! test -d /sys/devices ; then
+      # Should be done during the installation
+      if [ ! -d /sys ] ; then
+        mkdir /sys
+      fi
+      mount -t linsysfs sys /sys
+    fi
+    if ! mount | grep -q "on /dev/fd (fdescfs" ; then
+      mount -t fdescfs fdescfs /dev/fd
+    fi
+    log_action_end_msg 0
+
+	log_action_begin_msg "Setting kernel variables "
+	STATUS=0
+	for file in /etc/sysctl.conf ; do
+		if [ -r "$file" ] ; then
+			if [ "$VERBOSE" = "yes" ] ; then
+				log_action_cont_msg " $file"
+			fi
+			sysctl $QUIET_SYSCTL -p "$file" || STATUS=$?
+		fi
+	done
+	log_action_end_msg $STATUS
+
+    ;;
+
+  stop|reload|restart|force-reload)
+    ;;
+
+  *)
+      echo "Usage: $0 {start|stop|restart|force-reload}" >&2
+      exit 1
+      ;;
+esac
+
+exit 0

@@ -1,0 +1,2 @@
+deb http://ftp.fau.de/debian sid main
+deb-src http://ftp.fau.de/debian sid main
