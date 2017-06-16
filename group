@@ -43,3 +43,4 @@ steven:x:1000:
 ssh:x:103:
 lokke:x:1001:
 ssl-cert:x:104:
+mysql:x:105:
