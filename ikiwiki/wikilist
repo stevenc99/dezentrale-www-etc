@@ -10,3 +10,4 @@
 # setup file. The format of ~/.ikiwiki/wikilist is the same as this file.
 
 #joey /home/joey/.ikiwiki/ikiwiki.setup
+root
