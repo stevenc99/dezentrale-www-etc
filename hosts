@@ -3,4 +3,6 @@
 ff02::1		ip6-allnodes
 ff02::2		ip6-allrouters
 
-176.9.69.238	www.dezentrale.space www
+176.9.69.238	webfoo.dezentrale.space www
+127.0.0.1 webfoo.dezentrale.space
+127.0.0.1 autoreply.webfoo.dezentrale.space

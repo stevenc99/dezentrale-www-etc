@@ -46,3 +46,4 @@ ssl-cert:x:104:
 mysql:x:105:
 munin:x:106:
 Debian-exim:x:107:
+vacation:x:998:
