@@ -18,7 +18,7 @@ voice:x:22:
 cdrom:x:24:
 floppy:x:25:
 tape:x:26:
-sudo:x:27:steven,lokke
+sudo:x:27:steven,lokke,elbenfreund
 audio:x:29:
 dip:x:30:
 www-data:x:33:
@@ -47,3 +47,4 @@ mysql:x:105:
 munin:x:106:
 Debian-exim:x:107:
 vacation:x:998:
+elbenfreund:x:1002:
