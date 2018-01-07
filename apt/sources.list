@@ -3,3 +3,6 @@ deb-src http://ftp.fau.de/debian sid main
 
 deb http://ftp.fau.de/debian jessie-kfreebsd main
 deb-src http://ftp.fau.de/debian jessie-kfreebsd main
+
+deb http://snapshot.debian.org/archive/debian/20171029T215600Z/ sid main
+deb-src http://snapshot.debian.org/archive/debian/20171029T215600Z/ sid main
